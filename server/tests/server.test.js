@@ -78,6 +78,13 @@ describe('GET /todos', () => {
 		.expect((res) => {
 			expect(res.body.todos.length).toBe(2)
 		})
-		.end(done)
+		// .end(done)
+		.end((err, res) => {
+			if (err) {
+				return done(err)
+			} else {
+				return done()
+			}
+		})
 	});
 });
