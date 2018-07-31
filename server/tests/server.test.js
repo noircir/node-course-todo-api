@@ -1,12 +1,15 @@
 const expect = require('expect');
 const request = require('supertest');
+var {ObjectId} = require('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
 const todos = [{
+	_id: new ObjectId(),
 	text: 'First test todo'
 }, {
+	_id: new ObjectId(),
 	text: 'Second test todo'
 }]
 
@@ -21,6 +24,7 @@ beforeEach('Root-level Mocha hook', (done) => {
 });
 
 describe('POST /todos', () => {
+
 	it('should create a new todo', (done) => {
 		var text = 'Play with the cats';
 
@@ -51,6 +55,7 @@ describe('POST /todos', () => {
 	});
 
 	it('should not create todo with invalid body data', (done) => {
+
 		var emptyString = '';
 
 		request(app)
@@ -71,20 +76,73 @@ describe('POST /todos', () => {
 });
 
 describe('GET /todos', () => {
+
 	it('should get all todos', (done) => {
 		request(app)
 		.get('/todos')
 		.expect(200)
 		.expect((res) => {
-			expect(res.body.todos.length).toBe(2)
+			expect(res.body.todos.length).toBe(2);
 		})
 		// .end(done)
+		.end((err, res) => {
+			if (err) {
+				return done(err);
+			} else {
+				return done();
+			}
+		});
+	});
+});
+
+describe('GET /todos/:id', () => {
+
+	it('should return todo doc', (done) => {
+		request(app)
+		.get(`/todos/${todos[0]._id.toHexString()}`)
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todo.text).toBe(todos[0].text);
+		})
 		.end((err, res) => {
 			if (err) {
 				return done(err)
 			} else {
 				return done()
 			}
-		})
+		});
+	});
+
+
+	it('should return 404 if todo not found', (done) => {
+
+		var newId = new ObjectId().toHexString();
+
+		request(app)
+		.get('/todos/' + newId)
+		.expect(404)
+		.send('')
+		.end((err, res) => {
+			if (err) {
+				return done(err);
+			} else {
+				return done();	
+			}
+		});
+	});
+
+	it('should return 404 for non-object ids', (done) => {
+	
+		request(app)
+		.get('/todos/123')
+		.expect(404)
+		.send('')
+		.end((err, res) => {
+			if (err) {
+				return done(err);
+			} else {
+				return done();	
+			}
+		});
 	});
 });

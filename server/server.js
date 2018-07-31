@@ -39,23 +39,12 @@ app.get('/todos', (req, res) => {
 app.get('/todos/:id', (req, res) => {
 	var id = req.params.id;
 
-	// validate id
-		// 404 - send back empty body
-
 	if (!ObjectId.isValid(id)) {
-		console.log('Id not valid');
 		return res.status(404).send();
 	}
-
-	// find by id
-		// success
-			// if todo - send back
-			// if no todo - sen back 404 with empty body
-		// error
-			// 400 - send empty body back
+	
 	Todo.findById(id).then((todo) => {
 		if (!todo) {
-			console.log('Todo not found in db');
 			return res.status(404).send();
 		}
 		// sending todos as an object has an advantage of accessing properties
