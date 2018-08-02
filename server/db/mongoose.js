@@ -5,7 +5,7 @@ let db = {
   mlab: 'mongodb://monty:monty123@ds159651.mlab.com:59651/nodeplayground1'
 };
 
-mongoose.connect( db.mlab || db.localhost, { useNewUrlParser: true });
+mongoose.connect( db.localhost || db.mlab, { useNewUrlParser: true });
 
 module.exports = {
 	mongoose: mongoose
