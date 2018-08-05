@@ -11,7 +11,6 @@ var app = express();
 
 const port = process.env.PORT || 3000;
 
-// bodyParser.json() returns a function that we need to give to express.
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
@@ -63,12 +62,12 @@ app.delete('/todos/:id', (req, res) => {
 		return res.status(404).send();
 	}
 
-	Todo.findByIdAndRemove(id).then((doc) => {
+	Todo.findByIdAndRemove(id).then((todo) => {
 		if (!doc) {
 			return res.status(404).send();
 		}
-		
-		res.status(200).send(doc);
+
+		res.status(200).send({todo});
 	}).catch((e) => {
 		res.status(400).send();
 	});
