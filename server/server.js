@@ -90,7 +90,9 @@ app.patch('/todos/:id', (req, res) => {
 	}
 
 	if (_.isBoolean(body.completed) && body.completed) {
-		completedAt = new Date().getTime();
+		body.completedAt = new Date().getTime();
+		// body.completedAt = new Date().toLocaleTimeString();
+		console.log(body.completedAt);
 	} else {
 		body.completed = false;
 		body.completedAt = null;
@@ -101,7 +103,7 @@ app.patch('/todos/:id', (req, res) => {
 			return res.status(404).send();
 		}
 
-		res.status(200).send({todo});
+		res.status(200).send({todo: todo});
 	}).catch((e) => {
 		res.status(400).send();
 	});
