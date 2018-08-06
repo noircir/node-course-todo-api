@@ -18,6 +18,9 @@ const todos = [{
 
 beforeEach('Root-level Mocha hook', (done) => {
 	// populating with seed todos
+
+	// console.log('before every test in every file');
+	
 	Todo.remove({}).then(() => {
 		return Todo.insertMany(todos);
 	}).then(() => done());
@@ -163,11 +166,12 @@ describe('DELETE /todos/:id', () => {
 		.end((err, res) => {
 			if (err) {
 				return done(err);
-			} 
+			}
 
 			Todo.findById(hexId).then((doc) => {
 				expect(doc).toBeFalsy();
 				done();
+
 			}).catch((e) => done(e));
 		});
 	});
@@ -190,7 +194,7 @@ describe('DELETE /todos/:id', () => {
 	});
 
 	it('should return 404 if object id is invalid', (done) => {
-		
+
 		request(app)
 		.get('/todos/123')
 		.expect(404)
