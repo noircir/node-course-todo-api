@@ -127,7 +127,6 @@ describe('GET /todos/:id', () => {
 		request(app)
 		.get('/todos/' + hexId)
 		.expect(404)
-		.send('')
 		.end((err, res) => {
 			if (err) {
 				return done(err);
@@ -142,7 +141,6 @@ describe('GET /todos/:id', () => {
 		request(app)
 		.get('/todos/123')
 		.expect(404)
-		.send('')
 		.end((err, res) => {
 			if (err) {
 				return done(err);
@@ -183,9 +181,8 @@ describe('DELETE /todos/:id', () => {
 		var hexId = new ObjectId().toHexString();
 
 		request(app)
-		.patch(`/todos/${hexId}`)
+		.get(`/todos/${hexId}`)
 		.expect(404)
-		.send('')
 		.end((err, res) => {
 			if (err) {
 				return done(err);
@@ -200,7 +197,6 @@ describe('DELETE /todos/:id', () => {
 		request(app)
 		.get('/todos/123')
 		.expect(404)
-		.send('')
 		.end((err, res) => {
 			if (err) {
 				return done(err);
