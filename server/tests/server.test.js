@@ -10,7 +10,9 @@ const todos = [{
 	text: 'First test todo'
 }, {
 	_id: new ObjectId(),
-	text: 'Second test todo'
+	text: 'Second test todo',
+	comleted: true,
+	completedAt: 333
 }]
 
 // Root-level hook in Mocha, outside all 'describe' blocks
@@ -20,7 +22,7 @@ beforeEach('Root-level Mocha hook', (done) => {
 	// populating with seed todos
 
 	// console.log('before every test in every file');
-	
+
 	Todo.remove({}).then(() => {
 		return Todo.insertMany(todos);
 	}).then(() => done());
@@ -181,7 +183,7 @@ describe('DELETE /todos/:id', () => {
 		var hexId = new ObjectId().toHexString();
 
 		request(app)
-		.delete(`/todos/${hexId}`)
+		.patch(`/todos/${hexId}`)
 		.expect(404)
 		.send('')
 		.end((err, res) => {
@@ -206,6 +208,50 @@ describe('DELETE /todos/:id', () => {
 				return done();	
 			}
 		});
+	});
+});
+
+describe('PATCH /todos/:id', () => {
+	it('should update a todo', (done) => {
+
+		var hexId = todos[1]._id.toHexString();
+		var newText = 'Fly a plane';
+
+		request(app)
+		.patch(`/todos/${hexId}`)
+		.send({
+			text: newText, 
+			completed: true
+		})
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todo._id).toBe(hexId);
+			expect(res.body.todo.text).toBe(newText);
+			expect(res.body.todo.completed).toBe(true);
+			expect(typeof res.body.todo.completedAt).toBe('number');
+		})
+		.end(done);
+
+	});
+
+	it('should clear completedAt when todo is not completed', (done) => {
+
+		var hexId = todos[1]._id.toHexString();
+		var newText = 'Fly a plane';
+
+		request(app)
+		.patch(`/todos/${hexId}`)
+		.send({
+			text: newText, 
+			completed: false
+		})
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todo.text).toBe(newText);
+			expect(res.body.todo.completed).toBe(false);
+			expect(res.body.todo.completedAt).toBeNull();
+		})
+		.end(done);
 	});
 });
 
