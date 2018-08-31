@@ -7,6 +7,7 @@ var data = {
 
 var token = jwt.sign(data, '123abc');
 console.log(token);
+console.log(typeof(token));
 
 var decoded = jwt.verify(token, '123abc');
 console.log('decoded', decoded);
@@ -33,7 +34,7 @@ console.log('decoded', decoded);
 // 	hash: SHA256(JSON.stringify(data) + 'somesecret').toString()
 // }
 
-// // Validating if the token was not manipulated:
+// // The man in the middle wants to change id to 5, but he doesn't know the salt.
 
 // token.data.id = 5;
 // token.hash = SHA256(JSON.stringify(data)).toString();
@@ -45,4 +46,8 @@ console.log('decoded', decoded);
 // 	console.log('Data was not changed');
 // } else {
 // 	console.log('Data was changed. Don\'t trust!');
+// 	console.log(`Awaited hash: ${resultHash}`);
+// 	console.log(`New hash: ${token.hash}`);
 // }
+
+

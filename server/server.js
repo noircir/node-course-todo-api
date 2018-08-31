@@ -115,12 +115,21 @@ app.patch('/todos/:id', (req, res) => {
 app.post('/users', (req, res) => {
 
 	var body = _.pick(req.body, ['email', 'password']);
-
 	var user = new User(body);
-	
-	user.save().then((doc) => {
-		res.send(doc);
-	}, (e) => {
+
+	user.save().then(() => {
+
+		// 'return' statement is needed to pass on the token and the 'x-auth' value.
+
+		return user.generateAuthToken();
+	}).then((token) => {
+
+		// Attach token to a custom header.
+		// res.header is an alias of res.set(field [, value]) in Express API
+
+		res.header('x-auth', token).send(user);
+
+	}).catch((e) => {
 		res.status(400).send(e);
 	});
 });
