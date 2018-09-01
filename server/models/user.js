@@ -44,13 +44,13 @@ var UserSchema  = new mongoose.Schema({
  	}]
 });
 
-// These are going to be instance methods.
-// Using regular (not arrow) functions because arrow functions 
-// do not bind the "this" keyword.
+// =============================
+// Instance methods.
+// =============================
+// Using regular functions because arrow functions do not bind 'this'.
 
-// toJSON is automatically called when we respond to the express request with res.send. 
-// That converts our object to a string by calling JSON.stringify. 
-// JSON.stringify is what calls toJSON.
+// Overriding 'toJSON' to limit information sent back to client.
+// res.send calls JSON.stringify(), which in turn calls toJSON().
 
 UserSchema.methods.toJSON = function() {
 	// Rename 'this' to make clear what we are manipulating with.
@@ -65,18 +65,16 @@ UserSchema.methods.generateAuthToken = function() {
 	var user = this;
 	var access = 'auth';
 
-	// This line creates a new token with a new random salt.
-	// Salt will be eventually moved to configuration variables.
+	// Create a new token with salt (salt will be moved to config variables).
 
 	var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
 
-	// Instead of "push" array method, "concat" method (mongodb issues).
+	// Add new token to user's collection of tokens. 'concat' instead of 'push' (mongodb issues).
 
 	user.tokens = user.tokens.concat([{access, token}]);
 
-	// This line re-saves the user with the newly created token.
-	// The token inside the callback is for further use by the server.js file;
-	// return user.save() is the function's (method's) return.
+	// Re-save the user with the newly created token.
+	// Return the user and the generated token.
 
 	return user.save().then(() => {
 		return token;

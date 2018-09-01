@@ -119,12 +119,12 @@ app.post('/users', (req, res) => {
 
 	user.save().then(() => {
 
-		// 'return' statement is needed to pass on the token and the 'x-auth' value.
+		// 'return' statement is needed to pass on the token.
 
 		return user.generateAuthToken();
 	}).then((token) => {
 
-		// Attach token to a custom header.
+		// Attach token to custom header.
 		// res.header is an alias of res.set(field [, value]) in Express API
 
 		res.header('x-auth', token).send(user);
