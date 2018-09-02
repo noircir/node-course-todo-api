@@ -81,6 +81,39 @@ UserSchema.methods.generateAuthToken = function() {
 	});
 };
 
+
+// =============================
+// Model methods.
+// =============================
+
+UserSchema.statics.findByToken = function(token) {
+	// Instance methods get called with individual docs, 
+	// model methods get calles with a models as 'this' binding.
+	var User = this;
+	var decoded;
+
+	try {
+		decoded = jwt.verify(token, 'abc123');
+	} catch (e) {
+		// return new Promise((resolve, reject) => {
+		// 	reject();
+		// });
+		return Promise.reject();
+		// return Promise.reject('somevalue');  somevalue will be returned as 'e' in catch(e)
+	}
+
+	// to query a nested document (to find a token inside a token array property)
+	// wrap the value in quotes
+
+	return User.findOne({
+		'_id': decoded._id,
+		'tokens.token': token,
+		'tokens.access': 'auth'
+	});
+};
+
 var User = mongoose.model ('User', UserSchema);
 
 module.exports = {User: User}
+
+
