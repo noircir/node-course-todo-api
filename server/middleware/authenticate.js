@@ -21,7 +21,7 @@ var authenticate = (req, res, next) => {
 
 // Developing 'authenticate' middleware 
 
-// app.get('/users/me', authenticate, (req,res) => {
+// app.get('/users/me', (req,res) => {
 // 	var token = req.header('x-auth');
 
 // 	User.findByToken(token).then((user) => {

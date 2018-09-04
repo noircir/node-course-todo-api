@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // A Mongoose ‘schema’ is a document data structure (or shape of the document) 
 // that is enforced via the application layer.
@@ -102,7 +103,7 @@ UserSchema.statics.findByToken = function(token) {
 		// return Promise.reject('somevalue');  somevalue will be returned as 'e' in catch(e)
 	}
 
-	// to query a nested document (to find a token inside a token array property)
+	// to query a nested document (to find a token inside a token array property),
 	// wrap the value in quotes
 
 	return User.findOne({
@@ -111,6 +112,34 @@ UserSchema.statics.findByToken = function(token) {
 		'tokens.access': 'auth'
 	});
 };
+
+//================================================================
+// Mongoose middleware: hashing password before saving a user
+//================================================================
+
+UserSchema.pre('save', function(next) {
+	var user = this;
+
+	// hash the password only if it has been modified
+	if (user.isModified('password')) {
+
+		console.log(user.password);
+		console.log(user.isModified('password'));
+
+		bcrypt.genSalt(10, (err, salt) => {
+			console.log(salt);
+
+    		bcrypt.hash(user.password, salt, (err, hash) => {
+    			console.log(hash);
+        		user.password = hash;
+        		next();
+    		});
+		});
+
+	} else {
+		next();
+	}
+});
 
 var User = mongoose.model ('User', UserSchema);
 

@@ -125,7 +125,7 @@ app.post('/users', (req, res) => {
 		return user.generateAuthToken();
 	}).then((token) => {
 
-		// Attach token to custom header.
+		// Attach token to a custom header 'x-auth'.
 		// res.header is an alias of res.set(field [, value]) in Express API
 
 		res.header('x-auth', token).send(user);
@@ -137,6 +137,8 @@ app.post('/users', (req, res) => {
 
 
 app.get('/users/me', authenticate, (req,res) => {
+	// Through 'authenticate', extract user by the token value,
+	// and return to this route as req.user.
 	res.send(req.user);
 });
 
