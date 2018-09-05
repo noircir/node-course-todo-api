@@ -120,6 +120,7 @@ app.post('/users', (req, res) => {
 
 	user.save().then(() => {
 
+		// generateAuthToken() will re-save the user with a new token.
 		// 'return' statement is needed to pass on the token.
 
 		return user.generateAuthToken();

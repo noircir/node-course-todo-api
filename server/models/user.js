@@ -121,16 +121,13 @@ UserSchema.pre('save', function(next) {
 	var user = this;
 
 	// hash the password only if it has been modified
+	
 	if (user.isModified('password')) {
 
-		console.log(user.password);
-		console.log(user.isModified('password'));
-
 		bcrypt.genSalt(10, (err, salt) => {
-			console.log(salt);
 
     		bcrypt.hash(user.password, salt, (err, hash) => {
-    			console.log(hash);
+    			// console.log(hash);
         		user.password = hash;
         		next();
     		});
