@@ -112,7 +112,7 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
-
+// POST /users
 app.post('/users', (req, res) => {
 
 	var body = _.pick(req.body, ['email', 'password']);
@@ -130,7 +130,6 @@ app.post('/users', (req, res) => {
 		// res.header is an alias of res.set(field [, value]) in Express API
 
 		res.header('x-auth', token).send(user);
-
 	}).catch((e) => {
 		res.status(400).send(e);
 	});
@@ -142,6 +141,25 @@ app.get('/users/me', authenticate, (req,res) => {
 	// and return to this route as req.user.
 	res.send(req.user);
 });
+
+
+// POST /users/login {email, password}
+
+app.post('/users/login', (req, res) => {
+	var body = _.pick(req.body, ['email', 'password']);
+
+	User.findByCredentials(body.email, body.password).then((user) => {
+
+		// new token is generated for new login request. 
+		return user.generateAuthToken().then((token) => {
+			res.header('x-auth', token).send(user);
+		});
+	}).catch((e) => {
+		res.status(400).send();
+	});
+});
+
+
 
 
 app.listen(port, () => {

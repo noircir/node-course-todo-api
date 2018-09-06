@@ -113,6 +113,31 @@ UserSchema.statics.findByToken = function(token) {
 	});
 };
 
+UserSchema.statics.findByCredentials = function(email, password) {
+	var User = this;
+
+	return User.findOne({email}).then((user) => {
+		if (!user) {
+			return Promise.reject();
+		}
+
+		// bcrypt supports callbacks and doesn't support promises; 
+		// creating a promise artificially.
+
+		return new Promise((resolve,reject) => {
+			bcrypt.compare(password, user.password, (err, res) => {
+				// res is True or False
+				if (res) {
+					resolve(user);
+				} else {
+					reject();
+				}
+			});
+		});
+	});
+
+};
+
 //================================================================
 // Mongoose middleware: hashing password before saving a user
 //================================================================
@@ -121,7 +146,7 @@ UserSchema.pre('save', function(next) {
 	var user = this;
 
 	// hash the password only if it has been modified
-	
+
 	if (user.isModified('password')) {
 
 		bcrypt.genSalt(10, (err, salt) => {
