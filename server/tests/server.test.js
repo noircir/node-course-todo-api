@@ -236,7 +236,7 @@ describe('PATCH /todos/:id', () => {
 		.expect((res) => {
 			expect(res.body.todo.text).toBe(newText);
 			expect(res.body.todo.completed).toBe(false);
-			expect(res.body.todo.completedAt).toBeNull();
+			expect(res.body.todo.completedAt).toBeFalsy();
 		})
 		.end(done);
 	});
@@ -262,8 +262,7 @@ describe('GET /users/me', () => {
 		.get('/users/me')
 		.expect(401)
 		.expect((res) => {
-			expect(res.body._id).not.toBeDefined();
-			expect(res.body.email).not.toBeDefined();
+			expect(res.body).toEqual({});
 		})
 		.end(done);
 	});
@@ -281,8 +280,8 @@ describe ('POST /users', () => {
 		.send({email, password})
 		.expect(200)
 		.expect((res) => {
-			expect(res.headers['x-auth']).toBeDefined();
-			expect(res.body._id).toBeDefined();
+			expect(res.headers['x-auth']).toBeTruthy();
+			expect(res.body._id).toBeTruthy();
 			expect(res.body.email).toBe(email);
 		})
 		.end((err) => {
@@ -291,11 +290,11 @@ describe ('POST /users', () => {
 			}
 
 			User.findOne({email}).then((user) => {
-				expect(user).toBeDefined();
+				expect(user).toBeTruthy();
 				console.log(user.toJSON());
 				expect(user.password).not.toBe(password);
 				done();
-			});
+			}).catch((e) => done(e));
 		});
 	}); 
 
@@ -323,3 +322,63 @@ describe ('POST /users', () => {
 		.end(done);
 	}); 
 });
+
+describe('POST /users/login', (done) => {
+
+	it('should login user and return auth token', (done) => {
+		request(app)
+		.post('/users/login')
+		.send({
+			email: users[1].email,
+			password: users[1].password
+		})
+		.expect(200)
+		.expect((res) => {
+			expect(res.headers['x-auth']).toBeTruthy();
+		})
+		.end((err, res) => {
+			if (err) {
+				return done(err);
+			}
+
+			User.findById(users[1]._id).then((user) => {
+				// console.log(user);
+				expect(user.tokens[0]).toMatchObject({
+					access: 'auth',
+					token: res.headers['x-auth']
+				});
+				done();
+			}).catch((e) => done(e));
+		});
+	});
+
+	it('should reject invalid login', (done) => {
+
+		var wrongPasswd = '567uutt'; 
+
+		request(app)
+		.post('/users/login')
+		.send({
+			email: users[1].email,
+			password: wrongPasswd
+		})
+		.expect(400)
+		.expect((res) => {
+			expect(res.headers['x-auth']).toBeFalsy();
+		})
+		.end((err) => {
+			if (err) {
+				return done(err);
+			} 
+
+			User.findById(users[1]._id).then((user) => {
+				expect(user.tokens.length).toBe(0);
+				done();
+			}).catch((e) => done(e));
+		});
+	});
+
+});
+
+
+

@@ -112,7 +112,7 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
-// POST /users
+
 app.post('/users', (req, res) => {
 
 	var body = _.pick(req.body, ['email', 'password']);
@@ -143,14 +143,13 @@ app.get('/users/me', authenticate, (req,res) => {
 });
 
 
-// POST /users/login {email, password}
 
 app.post('/users/login', (req, res) => {
 	var body = _.pick(req.body, ['email', 'password']);
 
 	User.findByCredentials(body.email, body.password).then((user) => {
 
-		// new token is generated for new login request. 
+		// new token is generated and added to the array of tokens. 
 		return user.generateAuthToken().then((token) => {
 			res.header('x-auth', token).send(user);
 		});
