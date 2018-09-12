@@ -82,6 +82,17 @@ UserSchema.methods.generateAuthToken = function() {
 	});
 };
 
+UserSchema.methods.removeToken = function(token) {
+	var user = this;
+
+	return user.update({
+		// $pull will remove objects that match the criteria
+		$pull: {
+			tokens: {token}
+		}
+	})
+};
+
 
 // =============================
 // Model methods.
