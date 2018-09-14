@@ -68,7 +68,7 @@ UserSchema.methods.generateAuthToken = function() {
 
 	// Create a new token with salt (salt will be moved to config variables).
 
-	var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+	var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
 	// Add new token to user's collection of tokens. 'concat' instead of 'push' (mongodb issues).
 
@@ -105,7 +105,7 @@ UserSchema.statics.findByToken = function(token) {
 	var decoded;
 
 	try {
-		decoded = jwt.verify(token, 'abc123');
+		decoded = jwt.verify(token, process.env.JWT_SECRET);
 	} catch (e) {
 		// return new Promise((resolve, reject) => {
 		// 	reject();
