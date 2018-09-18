@@ -8,6 +8,9 @@ var mongoose = require('mongoose');
 // mongoose.connect( db.localhost || db.mlab, { useNewUrlParser: true });
 
 mongoose.connect(process.env.MONGODB_URI);
+mongoose.set('useCreateIndex', true);
+
+mongoose.set('useFindAndModify', false);
 
 module.exports = {
 	mongoose: mongoose
