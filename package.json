@@ -1,7 +1,6 @@
 {
   "name": "todo-api",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node server/server.js",
@@ -23,6 +22,7 @@
     "mongodb": "^3.1.1",
     "mongoose": "^5.2.5",
     "npm": "^6.3.0",
+    "npm-reinstall": "^1.2.1",
     "validator": "^10.5.0"
   },
   "devDependencies": {
@@ -30,5 +30,14 @@
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
     "supertest": "^3.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noircir/node-course-todo-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noircir/node-course-todo-api/issues"
+  },
+  "homepage": "https://github.com/noircir/node-course-todo-api#readme",
+  "description": ""
 }
